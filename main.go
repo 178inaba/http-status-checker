@@ -67,7 +67,9 @@ func main() {
 
 	msg := fmt.Sprintf("%s: OK!", targetRawurl)
 	log.Print(msg)
-	if err := slack.PostWebhookContext(ctx, webhookRawurl, &slack.WebhookMessage{Text: msg}); err != nil {
-		log.Fatal(err)
+	if webhookRawurl != "" {
+		if err := slack.PostWebhookContext(ctx, webhookRawurl, &slack.WebhookMessage{Text: msg}); err != nil {
+			log.Fatal(err)
+		}
 	}
 }
