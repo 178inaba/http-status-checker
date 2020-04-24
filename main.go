@@ -7,9 +7,11 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 	"time"
 
 	"github.com/slack-go/slack"
+	"gopkg.in/yaml.v2"
 )
 
 func main() {
@@ -29,6 +31,16 @@ func main() {
 	}
 	targetRawurl := args[0]
 
+	f, err := os.Open("header.yaml")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	headers := map[string]string{}
+	if err = yaml.NewDecoder(f).Decode(&headers); err != nil {
+		log.Fatal(err)
+	}
+
 	if _, err := url.ParseRequestURI(targetRawurl); err != nil {
 		log.Fatal(err)
 	}
@@ -38,6 +50,10 @@ func main() {
 	req, err := http.NewRequest(http.MethodHead, targetRawurl, nil)
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	for k, v := range headers {
+		req.Header.Set(k, v)
 	}
 
 	var i int
